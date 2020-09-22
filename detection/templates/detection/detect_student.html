@@ -1,0 +1,10 @@
+{% extends 'detection/base.html' %}
+
+
+{% block content %}
+    <h5>This is the page used to detect a student</h5>
+    <form action="{% url 'webcamdetection' %}" method="post">
+        {% csrf_token %}
+        <input type="submit" value="Load Web Cam" class="btn btn-primary">
+    </form>
+{% endblock %}

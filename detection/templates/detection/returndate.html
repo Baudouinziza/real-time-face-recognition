@@ -1,0 +1,24 @@
+{% extends 'detection/base.html' %}
+
+
+{% block content %}
+<table class="table borderless">
+    <thead class="border-bottom font-weight-bold">
+        <tr>
+            <td>Student Name</td>
+            <td>Arrive Date</td>
+            <td>Campus</td>
+        </tr>
+    </thead>
+    <tbody>
+        {% for Records in users %}
+        <tr>
+            <td>{{Records.student}}</td>
+            <td>{{Records.Arrivedate}}</td>
+            <td>{{Records.get_campus_display}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% include 'detection/pagination.html' with page=post%}
+{%endblock%}

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'detection/css/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'detection/css/daterangepicker.css' %}">
+    <title>Add Student</title>
+</head>
+<body>
+<div class="container mt-5">
+<h2 class="text-center alert alert-danger">Face Recognition</h2>
+{% block content %}
+{% endblock content %}
+</div>
+    <script src="{% static 'detection/js/jquerry.js'%}"></script>  
+    <script src="{% static 'detection/js/popper.js'%}"></script>  
+    <script src="{% static 'detection/js/bootstrap.js'%}"></script>  
+    
+    <script src="{% static 'detection/js/moment.min.js'%}"></script> 
+    <script src="{% static 'detection/js/daterangepicker.js'%}"></script>
+    {% block js %}
+    {% endblock js %}
+</body>
+</html>

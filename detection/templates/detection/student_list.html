@@ -1,0 +1,42 @@
+{% extends 'detection/base.html' %}
+
+
+{% block content %}
+<table class="table borderless">
+    <thead class="border-bottom font-weight-bold">
+        <tr>
+            <td>id</td>
+            <td>fname</td>
+            <td>lname</td>
+            <td>dob</td>
+            <td>dapartment</td>
+            <td>gender</td>
+            <td>status</td>
+            <td>reason</td>
+            <td>photoUrl</td>
+            <td>action</td>
+        </tr>
+    </thead>
+    <tbody>
+        {% for Student in users %}
+        <tr>
+            <td>{{Student.id}}</td>
+            <td>{{Student.first_name}}</td>
+            <td>{{Student.last_name}}</td>
+            <td>{{Student.dob}}</td>
+            <td>{{Student.departement}}</td>
+            <td>{{Student.get_gender_display }}</td>
+            <td>{{Student.get_status_display}}</td>
+            <td>{{Student.reason}}</td>
+            <td>{{Student.photoUrl}}</td>
+            <td>
+                <a href="" class="btn txt-primary px-0">
+                    <button type="submit" class="btn btn-primary">Edit</button>
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% include 'detection/pagination.html' with page=post%}
+{% endblock content %}

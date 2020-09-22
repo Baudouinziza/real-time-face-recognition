@@ -1,0 +1,20 @@
+
+{% extends 'detection/base.html' %}
+
+{% block content %}
+<title>P information</title>
+
+<div class="container">
+  <div class="col-md-8 col-md-offset-2">
+    <img src="{{Student.photoUrl.url}}" alt="image" class="img-responsive" style="border-radius:50%"/>
+  </div>
+    <!-- <h1>{{Student.photoUrl.url}}</h1> -->
+    <p>FirstName :{{Student.first_name}}</p>
+    <p>Last Name :{{Student.last_name}}</p>
+    <p>Date Of Birth :{{Student.dob}}</p>
+    <p>Department :{{Student.departement}}</p>
+    <p>Gender: {{Student.get_gender_display }}</p>
+    <p>Status: {{Student.get_status_display}}</p>
+    <p>Reason:  {{Student.reason}}</p>
+</div>
+{% endblock %}

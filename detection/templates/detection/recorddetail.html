@@ -1,0 +1,49 @@
+{% extends 'detection/base.html' %}
+
+
+{% block content %}
+<form action="datepicker" method="get">
+    <input type="text" name="datetimes" />
+    <input type="hidden" name="start" id="start" />
+    <input type="hidden" name="end" id="end" />
+    <button type="submit">Save</button>
+</form>
+<table class="table borderless">
+    <thead class="border-bottom font-weight-bold">
+        <tr>
+            <td>Student Name</td>
+            <td>Arrive Date</td>
+            <td>Campus</td>
+        </tr>
+    </thead>
+    <tbody>
+        {% for Records in users %}
+        <tr>
+            <td>{{Records.student}}</td>
+            <td>{{Records.Arrivedate}}</td>
+            <td>{{Records.get_campus_display}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% include 'detection/pagination.html' with page=post%}
+{%endblock%}
+{% block js %}
+<script language = "javascript" type = "text/javascript">
+$(function() {
+    $('input[name="datetimes"]').daterangepicker({
+      timePicker: true,
+      
+      locale: {
+        format: 'M/DD hh:mm '
+      }
+    });
+  });
+  $('input[name="datetimes"]').on('apply.daterangepicker', function(ev, picker) {
+    $('#start').val(picker.startDate.format('YYYY-MM-DD hh:mm A '));
+    $('#end').val(picker.endDate.format('YYYY-MM-DD hh:mm A'));
+    
+    
+  });
+</script> 
+{%endblock%}

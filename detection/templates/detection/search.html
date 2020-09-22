@@ -1,0 +1,65 @@
+{% extends 'detection/base.html' %}
+
+{% block content %}
+<div class="container">
+    <form action="" method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <div class="col-lg-5">
+               <input type="text" name="srh" class="form-control"> 
+            </div>
+            <div class="col-lg-2">
+                <button type="submit" class="btn btn-primary">Search</button>
+            </div>
+        </div>
+    </form>
+</div></br></br>
+<div>
+    {% if messages %}
+    <ul class="messages">
+        {% for Student in messages %}
+        <li style="color: blue;">{{ k }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+</div></br>
+<div style="color: blue;">
+   
+        <table class="table borderless">
+            <thead class="border-bottom font-weight-bold">
+                <tr>
+                    <td>id</td>
+                    <td>fname</td>
+                    <td>lname</td>
+                    <td>dob</td>
+                    <td>dapartment</td>
+                    <td>gender</td>
+                    <td>status</td>
+                    <td>reason</td>
+                    <td>photoUrl</td>
+                    <td>action</td>
+                </tr>
+            </thead>
+        <tbody>   
+            {% if sr %}
+            {% for Student in sr %}
+            <tr>
+                <td>{{Student.id}}</td>
+                <td>{{Student.first_name}}</td>
+                <td>{{Student.last_name}}</td>
+                <td>{{Student.dob}}</td>
+                <td>{{Student.departement}}</td>
+                <td>{{Student.get_gender_display }}</td>
+                <td>{{Student.get_status_display}}</td>
+                <td>{{Student.reason}}</td>
+                <td>{{Student.photoUrl}}</td>
+                <td>
+                    <a href="" class="btn txt-primary px-0">
+                        <button type="submit" class="btn btn-primary">Edit</button>
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        {% endif %}
+    </div>
+{% endblock %}
