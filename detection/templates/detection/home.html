@@ -1,11 +1,12 @@
-<html>
-    <head>
-        <title>
-            Video Stream
-        </title>
-    </head>
-    <body>
-        <h1>video live Stream</h1>
-        <img src="{% url 'video_feed' %}">
-    </body>
-</html>
+{% extends 'detection/base.html' %} {% block content %}
+
+
+<div class="container">
+
+    <h2 class="text-center alert alert-primary">video live Stream</h2>
+
+    <!-- <h1>video live Stream</h1> -->
+    <img src="{% url 'video_feed' %}">
+
+</div>
+{% endblock %}

@@ -13,13 +13,15 @@ import face_recognition
 import os
 import numpy as np
 from detection.camera import VideoCamera
+from django.conf import settings
+from django.core.mail import EmailMessage
 
 
 # Create your views here.
 from django.http import HttpResponse,HttpResponseRedirect
+import urllib
 
 face_cascade = cv2.CascadeClassifier('C:/Users/bdn/Desktop/heyyy/Bdn/faceRec/detection/cascade/haarcascade_frontalface_default.xml')
-
 
 
 def Student_list(request):
@@ -53,6 +55,8 @@ def Student_form(request):
         form = StudentForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
+            # here  am calling my creating dataset
+            create_dataset(request.POST['id'])    
             # f ts true it wll redirect
             return redirect('/show')
        
@@ -138,113 +142,6 @@ def attendanceRecord(request, id):
     }
     return render(request, 'detection/AttendanceDetail.html', context)
 
-#here am setting camera
-
-# def detect_student(request):
-#     if  request.method == 'POST':
-#         cap = cv2.VideoCapture(0)
-#         while True:
-#             ret, frame = cap.read()
-#             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-#             faces = face_cascade.detectMultiScale(gray, 1.5, 5)
-#             for (x, y, w, h) in faces:
-#                 cv2.rectangle(frame, (x,y), (x+w, y+h), (0, 0, 255), 2)
-#             cv2.imshow('webcam', frame)
-#             if cv2.waitKey(1) & 0xFF == ord('q'):
-#                 break
-#         cap.release()
-#         cv2.destroyAllWindows()
-#     return render(request, 'detection/detect_student.html')
-
-# path = 'media/picture'
-# tolerance = 0.2
-# images = []
-# classNames = []
-# myFiles = os.listdir(path)
-# # loop in this file to read image by image
-# print(myFiles)
-
-# for i in myFiles:
-#     image = cv2.imread(f'{path}/{i}')
-#     images.append(image)
-#     classNames.append(os.path.splitext(i)[0])
-# print(classNames)
-
-# # we want to create a function to create uncodings of all images and put them in a list 
-
-# def find_encodings(images):
-#     list_encodings = []
-#     for image in images:
-#         encode = face_recognition.face_encodings(image)[0]
-#         list_encodings.append(encode)
-#     return list_encodings
-
-# listofEncodings = find_encodings(images)
-# print(listofEncodings[0])
-
-# #here this is function to mark attendance to student whose camera saw
-
-# def mark_attendance(name):
-#     with open('Attendance.csv','r+') as f:
-#         myFiles = f.readlines()
-#         nameList = []
-#         for line in myFiles:
-#             entry = line.split(',')
-#             nameList.append(entry[0])
-#         if name not in nameList:
-#             now = datetime.datetime.now()
-#             dateString = now.strftime('%H:%M:%S')
-#             f.writelines(f'\n{name},{dateString}')
-# def detect_student(request):
-#     if  request.method == 'POST':
-#         cap = cv2.VideoCapture(0)
-#         while True:
-#             # Capture frame-by-frame
-#             ret, image = cap.read()
-#             # to speed up the process, we will resize the image captured 
-#             image_small = cv2.resize(image, (0,0), None, 0.25, 0.25)
-#             # convert the frame image to RGB
-#             image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-#             # create uncodings for our faces in the image 
-#             # face_locations is now an array listing the co-ordinates of each face!
-#             face_location = face_recognition.face_locations(image_small)
-#             current_image_uncoding = face_recognition.face_encodings(image_small, face_location)
-#             # find matches 
-#             for encodeface, face_loc in zip(current_image_uncoding, face_location):
-#                 matches = face_recognition.compare_faces(listofEncodings, encodeface)
-#                 faceDist = face_recognition.face_distance(listofEncodings, encodeface) 
-#                 print(faceDist)
-#                 matchindex = np.argmin(faceDist)
-#                 if matches[matchindex]:
-#                     name = classNames[matchindex]
-#             # print(name)
-#                 y1,x2,y2,x1 = face_loc
-#                 y1,x2,y2,x1 = y1*4,x2*4,y2*4,x1*4
-#                 cv2.rectangle(image, (x1,y1), (x2,y2), (255,0,0), 2)
-#                 cv2.rectangle(image, (x1,y2-20), (x2,y2), (255,0,0), cv2.FILLED)
-#                 cv2.putText(image, name, (x1+6, y2-6), cv2.FONT_HERSHEY_COMPLEX, 1,(255,255,255), 2)
-#             # here am calling the fuction to make attendance to known face viewed
-#                 mark_attendance(name)
-            
-#                 cv2.imshow('frame',image)
-            
-#             if cv2.waitKey(1) & 0xFF == ord('q'):
-#                 break
-#         cap.release()
-#         cv2.destroyAllWindows()
-
-#         # prince_image = face_recognition.load_image_file('media/images/Christian_Ronaldo.jpg')
-#         # prince_test= face_recognition.load_image_file('media/images/sandesk.png')
-#         # prince_image_encodings = face_recognition.face_encodings(prince_image)[0]
-#         # prince_test_encodings = face_recognition.face_encodings(prince_test)[0]
-#         # results = face_recognition.compare_faces([prince_image_encodings], prince_test_encodings)
-#         # face_distance = face_recognition.face_distance([prince_image_encodings], prince_test_encodings)
-#         # if results[0]:
-#         #     print(f'The two faces matches at {face_distance}')
-#         # else:
-#         #     print(f'The two faces doesn\'t match at {face_distance}')
-
-#     return render(request, 'detection/detect_student.html')
 
 def index(request):
     return render(request, 'detection/home.html')    
@@ -257,3 +154,199 @@ def gen(camera):
 
 def video_feed(request):
     return StreamingHttpResponse(gen(VideoCamera()), content_type="multipart/x-mixed-replace;boundary=frame")
+
+
+# here ama marking attendance to detected facesdef mark_attendance(name):
+def mark_attendance(name):
+    with open('Attendance.csv','r+') as f:
+        myFiles = f.readlines()
+        nameList = []
+        for line in myFiles:
+            entry = line.split(',')
+            nameList.append(entry[0])
+        if name not in nameList:
+            now = datetime.datetime.now()
+            dateString = now.strftime('%Y-%m-%d %H:%M:%S')
+            f.writelines(f'\n{name},{dateString}')
+
+# 2
+def create_dataset(id):
+    # if request.method == "POST":
+              #print request.POST
+        id = id
+        # print cv2.__version__
+        # Detect face
+        #Creating a cascade image classifier
+        faceDetect = cv2.CascadeClassifier('ml/haarcascade_frontalface_default.xml')
+        #camture images from the webcam and process and detect the face
+        # takes video capture id, for webcam most of the time its 0.
+        
+        cam = cv2.VideoCapture(0)
+
+        # Our identifier
+        # We will put the id here and we will store the id with a face, so that later we can identify whose face it is
+        userId = id
+        # Our dataset naming counter
+        sampleNum = 0
+        # Capturing the faces one by one and detect the faces and showing it on the window
+        while(True):
+            # Capturing the image
+            #cam.read will return the status variable and the captured colored image
+            ret, img = cam.read()
+            #the returned img is a colored image but for the classifier to work we need a greyscale image
+            #to convert
+            gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            #To store the faces
+            #This will detect all the images in the current frame, and it will return the coordinates of the faces
+            #Takes in image and some other parameter for accurate result
+            faces = faceDetect.detectMultiScale(gray, 1.3, 5)
+            #In above 'faces' variable there can be multiple faces so we have to get each and every face and draw a rectangle around it.
+            for(x,y,w,h) in faces:
+                # Whenever the program captures the face, we will write that is a folder
+                # Before capturing the face, we need to tell the script whose face it is
+                # For that we will need an identifier, here we call it id
+                # So now we captured a face, we need to write it in a file
+                sampleNum = sampleNum+1
+                # Saving the image dataset, but only the face part, cropping the rest
+                cv2.imwrite('ml/dataset/user.'+str(userId)+'.'+str(sampleNum)+'.jpg', gray[y:y+h,x:x+w])
+                # @params the initial point of the rectangle will be x,y and
+                # @params end point will be x+width and y+height
+                # @params along with color of the rectangle
+                # @params thickness of the rectangle
+                cv2.rectangle(img,(x,y),(x+w,y+h), (0,255,0), 2)
+                # Before continuing to the next loop, I want to give it a little pause
+                # waitKey of 100 millisecond
+                cv2.waitKey(250)
+
+            #Showing the image in another window
+            #Creates a window with window name "Face" and with the image img
+            cv2.imshow("Face",img)
+            #Before closing it we need to give a wait command, otherwise the open cv wont work
+            # @params with the millisecond of delay 1
+            cv2.waitKey(1)
+            #To get out of the loop
+            if(sampleNum>35):
+                break
+        #releasing the cam
+        cam.release()
+        # destroying all the windows
+        cv2.destroyAllWindows()
+
+        return redirect('/')
+
+        # return render(request, 'detection/index.html')
+
+def trainer(request):
+    '''
+        In trainer.py we have to get all the samples from the dataset folder,
+        for the trainer to recognize which id number is for which face.
+
+        for that we need to extract all the relative path
+        i.e. dataset/user.1.1.jpg, dataset/user.1.2.jpg, dataset/user.1.3.jpg
+        for this python has a library called os
+    '''
+    import os
+    from PIL import Image
+
+    #Creating a recognizer to train
+    recognizer = cv2.face.LBPHFaceRecognizer_create()
+    #Path of the samples
+    path = 'ml/dataset'
+
+    # To get all the images, we need corresponing id
+    def getImagesWithID(path):
+        # create a list for the path for all the images that is available in the folder
+        # from the path(dataset folder) this is listing all the directories and it is fetching the directories from each and every pictures
+        # And putting them in 'f' and join method is appending the f(file name) to the path with the '/'
+        imagePaths = [os.path.join(path,f) for f in os.listdir(path)] #concatinate the path with the image name
+        #print imagePaths
+
+        # Now, we loop all the images and store that userid and the face with different image list
+        faces = []
+        Ids = []
+        for imagePath in imagePaths:
+            # First we have to open the image then we have to convert it into numpy array
+            faceImg = Image.open(imagePath).convert('L') #convert it to grayscale
+            # converting the PIL image to numpy array
+            # @params takes image and convertion format
+            faceNp = np.array(faceImg, 'uint8')
+            # Now we need to get the user id, which we can get from the name of the picture
+            # for this we have to slit the path() i.e dataset/user.1.7.jpg with path splitter and then get the second part only i.e. user.1.7.jpg
+            # Then we split the second part with . splitter
+            # Initially in string format so hance have to convert into int format
+            ID = int(os.path.split(imagePath)[-1].split('.')[1]) # -1 so that it will count from backwards and slipt the second index of the '.' Hence id
+            # Images
+            faces.append(faceNp)
+            # Label
+            Ids.append(ID)
+            #print ID
+            cv2.imshow("training", faceNp)
+            cv2.waitKey(10)
+        return np.array(Ids), np.array(faces)
+
+    # Fetching ids and faces
+    ids, faces = getImagesWithID(path)
+
+    #Training the recognizer
+    # For that we need face samples and corresponding labels
+    recognizer.train(faces, ids)
+
+    # Save the recogzier state so that we can access it later
+    recognizer.save('ml/recognizer/trainingData.yml')
+    cv2.destroyAllWindows()
+
+    return redirect('/show')
+
+    return render(request, 'detection/student_list.html')
+
+def detect(request):
+    faceDetect = cv2.CascadeClassifier('ml/haarcascade_frontalface_default.xml')
+    
+    cam = cv2.VideoCapture(0)
+    # creating recognizer
+    rec = cv2.face.LBPHFaceRecognizer_create();
+    # loading the training data
+    rec.read('ml/recognizer/trainingData.yml')
+    getId = 0
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    userId = 0
+    while(True):
+        ret, img = cam.read()
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        faces = faceDetect.detectMultiScale(gray, 1.3, 5)
+        for(x,y,w,h) in faces:
+            cv2.rectangle(img,(x,y),(x+w,y+h), (0,255,0), 2)
+
+            getId,conf = rec.predict(gray[y:y+h, x:x+w]) #This will predict the id of the face
+
+            #print conf;
+            if conf<35:
+                userId = getId
+                cv2.putText(img, "Detected",(x,y+h), font, 2, (0,255,0),2)
+            else:
+                cv2.putText(img, "Unknown",(x,y+h), font, 2, (0,0,255),2)
+                
+                mark_attendance(getId)
+
+            # Printing that number below the face
+            # @Prams cam image, id, location,font style, color, stroke
+
+        cv2.imshow("Face",img)
+        if(cv2.waitKey(1) == ord('q')):
+            break
+        elif(userId != 0):
+            cv2.waitKey(1000)
+            cam.release()
+            cv2.destroyAllWindows()
+            return redirect('/person_details/'+str(userId))
+
+    cam.release()
+    cv2.destroyAllWindows()
+    return redirect('/')
+
+# to send email
+def email(request):
+    email = EmailMessage('Face recognition', 'here we are', to=['bauduinziza@gmail.com'])
+    email.send()
+
+    return render(request, 'detection/email.html')    

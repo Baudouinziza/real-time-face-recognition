@@ -1,0 +1,7 @@
+<h1>Email form</h1>
+<form action="{% url 'email' %}" method="post">
+   {% csrf_token %} 
+   <textarea name="message" id="" cols="30" rows="10" placeholder="message...........">
+    </textarea>
+    <input type="button" >
+</form>

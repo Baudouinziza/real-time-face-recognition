@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+<form action="/create_dataset" method="POST">
+  {% csrf_token %}
+  <div class="form-group">
+  <label for="id">Enter the image</label>
+  <input type="" name="userId">
+  <input type="submit" value="Save">
+  <a href="/trainer" class="form-group">train</a>
+  <a href="/detect" class="form-group">detect</a>
+
+</div>
+</form>
+</body>
+</html>

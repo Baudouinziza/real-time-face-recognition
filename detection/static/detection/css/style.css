@@ -1,0 +1,63 @@
+/* nav bar */
+.sidebar {
+height: 100vh;
+/* background: linear-gradient(rgba(0, 0, 0, .7),rgba(0, 0, 0, .9)) url(/detection/static/detection/images/AbouBanner.jpg); */
+background-position: center;
+background-repeat: no-repeat;
+background-size: cover;
+box-shadow: 5px 7px 25px #999;
+width: 220px;
+}
+.bottom-border {
+    border-bottom: 1px groove #eee;
+}
+.sidebar-link{
+    transition: all .4s;
+}
+.sidebar-link:hover {
+    background-color: rgb(131, 131, 234);
+    border-radius: 5px;
+}
+.current{
+    background-color: #6456f8;
+    border-radius: 7px;
+    box-shadow: 2px 5px 10px #1111;
+    transition: all .3s;
+}
+.current:hover{
+    background-color: #6456f8;
+    border-radius: 7px;
+    box-shadow: 2px 5px 10px #1111;
+    transform: translate(-1px);
+}
+.search-input{
+    background: transparent;
+    border: none;
+    border-radius: 0px;
+    border-bottom: 2px solid #999;
+    transition: all .4s;
+}
+.search-input:focus{
+    background: transparent;
+    box-shadow: none;
+    border-bottom: 2px solid #8882f3;
+}
+.search-buttom{
+    border-radius: 50%;
+    padding: 10px 16px;
+    transition: all 4s;
+}
+.search-buttom:hover{
+    background-color: #eee;
+    transform: translate(-1px);
+}
+@media(max-width: 768px){
+    .sidebar{
+        position: static;
+    }
+    .top-navbar{
+        position: static;
+    }
+}
+
+/* end navbar */
